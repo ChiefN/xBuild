@@ -1,7 +1,7 @@
-package com.example.xbulild.service;
+package com.example.xbulild.object;
 
-import com.example.xbulild.entity.Workout;
-import com.example.xbulild.repository.WorkoutRepository;
+import com.example.xbulild.object.Workout;
+import com.example.xbulild.object.WorkoutRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +13,6 @@ public class WorkoutService {
     public WorkoutService(WorkoutRepository workoutRepository) {
         this.workoutRepository = workoutRepository;
     }
-
     public List<Workout> findAll(){
         return workoutRepository.findAll();
     }
