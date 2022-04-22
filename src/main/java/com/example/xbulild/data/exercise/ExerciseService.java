@@ -1,10 +1,8 @@
-package com.example.xbulild.exercise;
+package com.example.xbulild.data.exercise;
 
-import com.example.xbulild.equipment.Equipment;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ExerciseService{
@@ -15,7 +13,12 @@ public class ExerciseService{
     }
 
     //Get data
-    public List<Exercise> findAllByCustomFilter(String filterText, List<Integer> equipmentIdList){
+    public List<Exercise> findAllByCustomFilter(String filterText, List<Integer> equipmentIdList, List<Integer> propertyIdList){
+
+        if(filterText == null && equipmentIdList == null && propertyIdList == null){
+            return exerciseRepository.findAll();
+        }
+
         List<Exercise> initialList;
 
         if(filterText == null || filterText.isEmpty()){
@@ -39,6 +42,7 @@ public class ExerciseService{
         Exercise exerciseInDB = exerciseRepository.findById(exercise.getId()).orElseThrow();
         if(exercise.getName() != null && !exercise.getName().isEmpty() && !exercise.getName().isBlank()){
             exerciseInDB.setName(exercise.getName());
+            exerciseInDB.setPropertySet(exercise.getPropertySet());
         }
         exerciseRepository.save(exerciseInDB);
     }

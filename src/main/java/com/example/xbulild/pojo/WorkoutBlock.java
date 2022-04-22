@@ -1,4 +1,4 @@
-package com.example.xbulild.object;
+package com.example.xbulild.pojo;
 
 import java.util.ArrayList;
 import java.util.List;

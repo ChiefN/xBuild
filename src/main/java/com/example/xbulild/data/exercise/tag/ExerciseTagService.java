@@ -1,4 +1,4 @@
-package com.example.xbulild.exercise.tag;
+package com.example.xbulild.data.exercise.tag;
 
 import org.springframework.stereotype.Service;
 

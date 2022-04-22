@@ -1,6 +1,5 @@
-package com.example.xbulild.object;
+package com.example.xbulild.pojo;
 
-import com.example.xbulild.object.Workout;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface WorkoutRepository extends MongoRepository<Workout, String> {

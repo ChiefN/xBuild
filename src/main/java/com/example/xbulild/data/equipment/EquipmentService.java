@@ -1,7 +1,5 @@
-package com.example.xbulild.equipment;
+package com.example.xbulild.data.equipment;
 
-import com.example.xbulild.equipment.Equipment;
-import com.example.xbulild.equipment.EquipmentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

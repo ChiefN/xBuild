@@ -1,9 +1,11 @@
 package com.example.xbulild.vaadin.view;
 
-import com.example.xbulild.equipment.Equipment;
-import com.example.xbulild.exercise.Exercise;
-import com.example.xbulild.equipment.EquipmentService;
-import com.example.xbulild.exercise.ExerciseService;
+import com.example.xbulild.data.equipment.Equipment;
+import com.example.xbulild.data.exercise.Exercise;
+import com.example.xbulild.data.equipment.EquipmentService;
+import com.example.xbulild.data.exercise.ExerciseService;
+import com.example.xbulild.data.property.PropertyRepository;
+import com.example.xbulild.data.property.PropertyService;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.grid.Grid;
@@ -25,14 +27,16 @@ import java.util.Set;
 public class ExerciseView extends VerticalLayout {
     ExerciseService exerciseService;
     EquipmentService equipmentService;
+    PropertyService propertyService;
     Grid<Exercise> exerciseGrid;
     TextField filterText = new TextField();
     Paragraph customApi = new Paragraph();
     CheckboxGroup<Equipment> equipmentCheckboxGroup = new CheckboxGroup<>();
 
-    public ExerciseView(ExerciseService exerciseService, EquipmentService equipmentService){
+    public ExerciseView(ExerciseService exerciseService, EquipmentService equipmentService, PropertyService propertyService){
         this.exerciseService = exerciseService;
         this.equipmentService = equipmentService;
+        this.propertyService = propertyService;
         this.exerciseGrid = new Grid<>(Exercise.class, false);
 
         HorizontalLayout hl = new HorizontalLayout(new Paragraph("Current API query: "), customApi);
@@ -40,6 +44,11 @@ public class ExerciseView extends VerticalLayout {
 
         exerciseGrid.addColumn(exercise -> exercise.getName()).setHeader("Name");
         exerciseGrid.addColumn(exercise -> getEquipmentSetAsString(exercise)).setHeader("Equipment");
+
+        propertyService.findDistinctCategory().forEach(categoryStr -> {
+            exerciseGrid.addColumn(exercise -> getPropertyAsString(exercise, categoryStr)).setHeader(categoryStr);
+        });
+
         exerciseGrid.addColumn(exercise -> exercise.getExerciseTag().getTag()).setHeader("Tags");
 
         exerciseGrid.setDetailsVisibleOnClick(true);
@@ -80,7 +89,7 @@ public class ExerciseView extends VerticalLayout {
     private void updateGrid() {
         Set<Equipment> selectedItems = equipmentCheckboxGroup.getSelectedItems();
         List<Integer> equipmentIdList = selectedItems.stream().map(Equipment::getId).toList();
-        exerciseGrid.setItems(exerciseService.findAllByCustomFilter(filterText.getValue(), equipmentIdList));
+        exerciseGrid.setItems(exerciseService.findAllByCustomFilter(filterText.getValue(), equipmentIdList, null));
 
         String apiQuery = getFilterAsApiQuery(filterText.getValue(), equipmentIdList);
         customApi.setText(apiQuery);
@@ -118,6 +127,15 @@ public class ExerciseView extends VerticalLayout {
                 equipmentAsString.append(", ");
             });
             return equipmentAsString.toString();
+    }
+
+    public String getPropertyAsString(Exercise exercise, String categoryStr) {
+        StringBuffer propertyAsString = new StringBuffer("");
+        exercise.getPropertySet().stream().filter(property -> property.getCategory().equals(categoryStr)).forEach(property -> {
+            propertyAsString.append(property.getName());
+            propertyAsString.append(", ");
+        });
+        return propertyAsString.toString();
     }
 
     public ListDataProvider<Equipment> equipmentListDataProvider(){

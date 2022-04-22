@@ -1,6 +1,6 @@
-package com.example.xbulild.exercise.tag;
+package com.example.xbulild.data.exercise.tag;
 
-import com.example.xbulild.exercise.Exercise;
+import com.example.xbulild.data.exercise.Exercise;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

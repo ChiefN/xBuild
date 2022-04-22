@@ -1,6 +1,5 @@
-package com.example.xbulild.equipment;
+package com.example.xbulild.data.equipment;
 
-import com.example.xbulild.equipment.Equipment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

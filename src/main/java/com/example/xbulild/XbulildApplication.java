@@ -1,19 +1,23 @@
 package com.example.xbulild;
 
-import com.example.xbulild.equipment.Equipment;
-import com.example.xbulild.exercise.Exercise;
-import com.example.xbulild.exercise.tag.ExerciseTag;
-import com.example.xbulild.object.WorkoutBlock;
-import com.example.xbulild.object.WorkoutContent;
-import com.example.xbulild.object.WorkoutExercise;
-import com.example.xbulild.equipment.EquipmentRepository;
-import com.example.xbulild.exercise.ExerciseRepository;
-import com.example.xbulild.object.WorkoutRepository;
+import com.example.xbulild.data.property.Property;
+import com.example.xbulild.data.equipment.Equipment;
+import com.example.xbulild.data.exercise.Exercise;
+import com.example.xbulild.data.exercise.tag.ExerciseTag;
+import com.example.xbulild.data.property.PropertyRepository;
+import com.example.xbulild.pojo.WorkoutBlock;
+import com.example.xbulild.pojo.WorkoutContent;
+import com.example.xbulild.pojo.WorkoutExercise;
+import com.example.xbulild.data.equipment.EquipmentRepository;
+import com.example.xbulild.data.exercise.ExerciseRepository;
+import com.example.xbulild.pojo.WorkoutRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @SpringBootApplication
@@ -24,45 +28,71 @@ public class XbulildApplication {
     }
 
     @Bean
-    CommandLineRunner init(ExerciseRepository exerciseRepository, WorkoutRepository workoutRepository, EquipmentRepository equipmentRepository){
+    CommandLineRunner init(ExerciseRepository exerciseRepository, PropertyRepository propertyRepository, EquipmentRepository equipmentRepository ){
         return args -> {
-            List<Exercise> exerciseList = List.of(
-                    new Exercise("Knäböj"),
-                    new Exercise("Marklyft"),
-                    new Exercise("Bänkpress"),
-                    new Exercise("Chins"),
-                    new Exercise("Rodd"),
-                    new Exercise("Militärpress"),
-                    new Exercise("Höftlyft")
-            );
-            List<ExerciseTag> exerciseTagList = List.of(
-                    new ExerciseTag(),
-                    new ExerciseTag(),
-                    new ExerciseTag(),
-                    new ExerciseTag(),
-                    new ExerciseTag(),
-                    new ExerciseTag(),
-                    new ExerciseTag()
-            );
 
             List<Equipment> equipmentList = List.of(
-                    Equipment.builder().name("Dumbbell").build(),
-                    Equipment.builder().name("Body-weight").build(),
-                    Equipment.builder().name("Barbell").build(),
-                    Equipment.builder().name("Bench").build(),
-                    Equipment.builder().name("Pull-up bar").build()
+                    Equipment.builder().name("Dumbbell").exerciseSet(new HashSet<>()).build(),
+                    Equipment.builder().name("Body-weight").exerciseSet(new HashSet<>()).build(),
+                    Equipment.builder().name("Barbell").exerciseSet(new HashSet<>()).build(),
+                    Equipment.builder().name("Bench").exerciseSet(new HashSet<>()).build()
             );
 
-            for(int i = 0; i < 7; i++){
-                exerciseList.get(i).setExerciseTag(exerciseTagList.get(i));
-                exerciseTagList.get(i).setExercise(exerciseList.get(i));
+            List<Property> propertyList = new ArrayList<>();
+            Property p1 = new Property();
+            p1.setName("Sumo");
+            p1.setCategory("Stance");
+
+            Property p2 = new Property();
+            p2.setName("Hold");
+            p2.setCategory("Load");
+
+
+            /* List.of(
+                    /*Property.builder().name("Parallel").category("Stance").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Sumo").category("Stance").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Split").category("Stance").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Staggered").category("Stance").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Seated").category("Stance").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Lying").category("Stance").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Rack").category("Load").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Back").category("Load").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Overhead").category("Load").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Hold").category("Load").exerciseSet(new HashSet<>()).build(),
+                    Property.builder().name("Split").category("Load").exerciseSet(new HashSet<>()).build()
+            );*/
+
+            //propertyRepository.saveAll(propertyList);
+
+
+            List<Exercise> exerciseList = List.of(
+                    Exercise.builder().name("Back squat").equipmentSet(new HashSet<>()).propertySet(new HashSet<>()).build(),
+                    Exercise.builder().name("Goblet squat").equipmentSet(new HashSet<>()).propertySet(new HashSet<>()).build(),
+                    Exercise.builder().name("Bench press").equipmentSet(new HashSet<>()).propertySet(new HashSet<>()).build()
+            );
+
+
+            for(int i = 0; i < exerciseList.size(); i++){
+                ExerciseTag tag = new ExerciseTag();
+                exerciseList.get(i).setExerciseTag(tag);
+                tag.setExercise(exerciseList.get(i));
             }
 
-            exerciseList.get(1).insertSingleIntoEquipmentSet(equipmentList.get(1));
-            exerciseList.get(1).insertSingleIntoEquipmentSet(equipmentList.get(2));
+            exerciseList.get(0).addEquipment(equipmentList.get(2));
+            exerciseList.get(1).addEquipment(equipmentList.get(3));
+            exerciseList.get(2).addEquipment(equipmentList.get(2));
+            exerciseList.get(2).addEquipment(equipmentList.get(3));
+            exerciseList.get(0).addProperty(p1);
+            exerciseList.get(2).addProperty(p2);
 
 
             exerciseRepository.saveAll(exerciseList);
+
+            List<String> categories = propertyRepository.findDistinctCategory();
+
+            categories.forEach(str -> {
+                System.out.println(str);
+            });
 
 //            List<Workout> workoutList = List.of(
 //                    new Workout("Workout1"),

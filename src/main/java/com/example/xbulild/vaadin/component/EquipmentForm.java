@@ -1,7 +1,7 @@
 package com.example.xbulild.vaadin.component;
 
-import com.example.xbulild.equipment.Equipment;
-import com.example.xbulild.equipment.EquipmentService;
+import com.example.xbulild.data.equipment.Equipment;
+import com.example.xbulild.data.equipment.EquipmentService;
 import com.example.xbulild.vaadin.view.AdminView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;

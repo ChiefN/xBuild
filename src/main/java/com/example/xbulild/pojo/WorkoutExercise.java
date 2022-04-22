@@ -1,7 +1,4 @@
-package com.example.xbulild.object;
-
-import java.util.ArrayList;
-import java.util.List;
+package com.example.xbulild.pojo;
 
 public class WorkoutExercise extends WorkoutContent{
 

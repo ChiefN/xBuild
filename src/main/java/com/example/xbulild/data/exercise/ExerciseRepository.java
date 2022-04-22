@@ -1,6 +1,6 @@
-package com.example.xbulild.exercise;
+package com.example.xbulild.data.exercise;
 
-import com.example.xbulild.exercise.Exercise;
+import com.example.xbulild.data.property.Property;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +14,5 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Integer>{
     @Query("SELECT e, et FROM Exercise e JOIN ExerciseTag et ON e.id=et.id " +
     "WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ")
     List<Exercise> search(@Param("searchTerm") String searchTerm);
+
 }

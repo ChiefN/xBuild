@@ -1,11 +1,11 @@
 package com.example.xbulild.vaadin.view;
 
-import com.example.xbulild.equipment.Equipment;
-import com.example.xbulild.exercise.Exercise;
-import com.example.xbulild.object.Workout;
-import com.example.xbulild.equipment.EquipmentRepository;
-import com.example.xbulild.exercise.ExerciseService;
-import com.example.xbulild.object.WorkoutService;
+import com.example.xbulild.data.equipment.Equipment;
+import com.example.xbulild.data.exercise.Exercise;
+import com.example.xbulild.pojo.Workout;
+import com.example.xbulild.data.equipment.EquipmentRepository;
+import com.example.xbulild.data.exercise.ExerciseService;
+import com.example.xbulild.pojo.WorkoutService;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -32,7 +32,7 @@ public class TestView extends VerticalLayout {
         equipmentGrid.addColumn(Equipment::getName).setHeader("Name");
 
         workoutGrid.setItems(workoutService.findAll());
-        exerciseGrid.setItems(exerciseService.findAllByCustomFilter(null, null)); //Added
+        exerciseGrid.setItems(exerciseService.findAllByCustomFilter(null, null, null)); //Added
         equipmentGrid.setItems(equipmentRepository.findAll());
 
         add(new H1("Hello World!"));

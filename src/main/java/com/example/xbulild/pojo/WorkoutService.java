@@ -1,7 +1,5 @@
-package com.example.xbulild.object;
+package com.example.xbulild.pojo;
 
-import com.example.xbulild.object.Workout;
-import com.example.xbulild.object.WorkoutRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

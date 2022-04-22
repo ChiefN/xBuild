@@ -1,10 +1,8 @@
-package com.example.xbulild.exercise;
+package com.example.xbulild.data.exercise;
 
-import com.example.xbulild.equipment.Equipment;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/exercise")
@@ -18,9 +16,10 @@ public class ExerciseController {
     @GetMapping
     public List<Exercise> findAllByCustomFilter(
             @RequestParam(required = false, name = "filterText") String filterText,
-            @RequestParam(required = false, name = "equipmentList") List<Integer> equipmentIdList
+            @RequestParam(required = false, name = "equipmentIdList") List<Integer> equipmentIdList,
+            @RequestParam(required = false, name = "propertyIdList") List<Integer> propertyIdList
             ){
-        return exerciseService.findAllByCustomFilter(filterText, equipmentIdList);
+        return exerciseService.findAllByCustomFilter(filterText, equipmentIdList, propertyIdList);
     }
 
     @GetMapping("/{id}")
