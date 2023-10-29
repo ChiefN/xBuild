@@ -9,4 +9,6 @@ public class ExerciseTagService {
     public ExerciseTagService(ExerciseTagRepository exerciseTagRepository) {
         this.exerciseTagRepository = exerciseTagRepository;
     }
+
+    public void save(ExerciseTag exerciseTag){ exerciseTagRepository.save(exerciseTag); }
 }

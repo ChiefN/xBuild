@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class ExerciseTag {
     @Id
     @Column(name = "exercise_id")
-    private Integer id;
+    private String id;
 
     public String tag;
 

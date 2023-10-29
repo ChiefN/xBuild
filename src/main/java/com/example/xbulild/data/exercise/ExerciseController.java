@@ -16,14 +16,14 @@ public class ExerciseController {
     @GetMapping
     public List<Exercise> findAllByCustomFilter(
             @RequestParam(required = false, name = "filterText") String filterText,
-            @RequestParam(required = false, name = "equipmentIdList") List<Integer> equipmentIdList,
-            @RequestParam(required = false, name = "propertyIdList") List<Integer> propertyIdList
+            @RequestParam(required = false, name = "equipmentIdList") List<String> equipmentIdList,
+            @RequestParam(required = false, name = "propertyIdList") List<String> propertyIdList
             ){
         return exerciseService.findAllByCustomFilter(filterText, equipmentIdList, propertyIdList);
     }
 
     @GetMapping("/{id}")
-    public Exercise findById(@PathVariable("id") int id){
+    public Exercise findById(@PathVariable("id") String id){
         return exerciseService.findById(id);
     }
 

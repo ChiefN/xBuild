@@ -13,20 +13,16 @@ public class ExerciseService{
     }
 
     //Get data
-    public List<Exercise> findAllByCustomFilter(String filterText, List<Integer> equipmentIdList, List<Integer> propertyIdList){
-
+    public List<Exercise> findAllByCustomFilter(String filterText, List<String> equipmentIdList, List<String> propertyIdList){
         if(filterText == null && equipmentIdList == null && propertyIdList == null){
             return exerciseRepository.findAll();
         }
-
         List<Exercise> initialList;
-
         if(filterText == null || filterText.isEmpty()){
             initialList = exerciseRepository.findAll();
         } else {
             initialList = exerciseRepository.search(filterText);
         }
-
         if(equipmentIdList == null || equipmentIdList.isEmpty()){
             return initialList;
         } else {
@@ -34,20 +30,15 @@ public class ExerciseService{
         }
     }
 
-    public Exercise findById(int id){ return exerciseRepository.findById(id).orElseThrow(); }
+    public Exercise findById(String id){ return exerciseRepository.findById(id).orElseThrow(); }
 
+    //Save data
     public void save(Exercise exercise) { exerciseRepository.save(exercise);}
 
-    public void editOne(Exercise exercise) {
-        Exercise exerciseInDB = exerciseRepository.findById(exercise.getId()).orElseThrow();
-        if(exercise.getName() != null && !exercise.getName().isEmpty() && !exercise.getName().isBlank()){
-            exerciseInDB.setName(exercise.getName());
-            exerciseInDB.setPropertySet(exercise.getPropertySet());
-        }
-        exerciseRepository.save(exerciseInDB);
-    }
+    //Delete data
+    public void deleteById(String id) {
 
-    public void deleteById(Integer id) {
+        System.out.println("Delete");
         exerciseRepository.deleteById(id);
     }
 }

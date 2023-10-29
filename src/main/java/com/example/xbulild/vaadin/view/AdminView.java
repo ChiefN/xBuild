@@ -1,5 +1,6 @@
 package com.example.xbulild.vaadin.view;
 
+import com.example.xbulild.data.exercise.tag.ExerciseTagService;
 import com.example.xbulild.data.property.Property;
 import com.example.xbulild.data.property.PropertyService;
 import com.example.xbulild.vaadin.component.EquipmentForm;
@@ -8,6 +9,7 @@ import com.example.xbulild.data.equipment.Equipment;
 import com.example.xbulild.data.exercise.Exercise;
 import com.example.xbulild.data.equipment.EquipmentService;
 import com.example.xbulild.data.exercise.ExerciseService;
+import com.example.xbulild.vaadin.component.PropertyForm;
 import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -16,6 +18,7 @@ import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -33,41 +36,92 @@ import java.util.Set;
 
 @Route(value = "/admin", layout = AppView.class)
 public class AdminView extends VerticalLayout {
+    Grid<Exercise> exerciseGrid = new Grid<>(Exercise.class, false);
     Grid<Equipment> equipmentGrid = new Grid<>(Equipment.class, false);
-    Button addNewEquipmentBtn = new Button("New equipment");
+    Grid<Property> propertyGrid = new Grid<>(Property.class, false);
+
+    ExerciseService exerciseService;
     EquipmentService equipmentService;
     PropertyService propertyService;
+    ExerciseTagService exerciseTagService;
 
-    Grid<Exercise> exerciseGrid = new Grid<>(Exercise.class, false);
     Button addNewExerciseBtn = new Button("New exercise");
-    ExerciseService exerciseService;
+    Button addNewEquipmentBtn = new Button("New equipment");
+    Button addNewPropertyBtn = new Button("New property");
 
-    public AdminView(EquipmentService equipmentService, ExerciseService exerciseService, PropertyService propertyService){
-        this.equipmentService = equipmentService;
-        configEquipmentGrid();
-        addNewEquipmentBtn.addClickListener(e -> {
-           openEquipmentForm(null);
-        });
-
-        this.propertyService = propertyService;
+    public AdminView(EquipmentService equipmentService, ExerciseService exerciseService, PropertyService propertyService, ExerciseTagService exerciseTagService){
         this.exerciseService = exerciseService;
+        this.equipmentService = equipmentService;
+        this.propertyService = propertyService;
+        this.exerciseTagService = exerciseTagService;
+
+        addNewExerciseBtn.addClickListener(e -> { addNew("exercise"); });
+        addNewEquipmentBtn.addClickListener(e -> addNew("equipment"));
+        addNewPropertyBtn.addClickListener(e -> addNew("property"));
+
         configExerciseGrid();
-        addNewExerciseBtn.addClickListener(e -> {
-            openExerciseForm(null);
-        });
+        configEquipmentGrid();
+        configPropertyGrid();
 
         createLayout();
         updateGrid();
     }
 
     private void createLayout() {
-        add(addNewEquipmentBtn, equipmentGrid, addNewExerciseBtn, exerciseGrid);
+        add(addNewExerciseBtn, exerciseGrid, new Hr(),
+                addNewEquipmentBtn, equipmentGrid, new Hr(),
+                addNewPropertyBtn, propertyGrid, new Hr());
+    }
+
+    public void updateGrid(){
+        propertyGrid.setItems(propertyService.findAll());
+        equipmentGrid.setItems(equipmentService.findAll());
+        exerciseGrid.setItems(exerciseService.findAllByCustomFilter(null, null, null));
+    }
+
+    private void addNew(String addNewWhat) {
+        System.out.println("add new " + addNewWhat);
+        Dialog dialog = new Dialog();
+        Boolean open = true;
+        switch(addNewWhat){
+            case "exercise":
+                ExerciseForm exerciseForm = new ExerciseForm(exerciseService, this, propertyService, equipmentService, exerciseTagService);
+                Exercise exercise = new Exercise();
+                exerciseForm.setExerciseBean(exercise, "Add new exercise");
+                dialog.add(exerciseForm);
+                break;
+            case "equipment":
+                EquipmentForm equipmentForm = new EquipmentForm(equipmentService, this);
+                Equipment equipment = new Equipment();
+                equipmentForm.setEquipmentBean(equipment);
+                dialog.add(equipmentForm);
+                break;
+            case "property":
+                PropertyForm propertyForm = new PropertyForm(propertyService, this);
+                Property property = new Property();
+                propertyForm.setPropertyBean(property);
+                dialog.add(propertyForm);
+                break;
+            default:
+                open = false;
+                break;
+        }
+
+        if(open){
+            dialog.open();
+        }
     }
 
     private void configEquipmentGrid() {
         equipmentGrid.addColumn(Equipment::getName).setHeader("Name");
         equipmentGrid.addComponentColumn(equipment -> {
             Button deleteBtn = new Button(new Icon(VaadinIcon.CLOSE), e -> {
+                if(equipment.getExerciseSet() != null || !equipment.getExerciseSet().isEmpty()) {
+                    equipment.getExerciseSet().forEach(exercise -> {
+                        exercise.removeEquipment(equipment);
+                        exerciseService.save(exercise);
+                    });
+                }
                 equipmentService.deleteById(equipment.getId());
                 updateGrid();
             });
@@ -80,11 +134,29 @@ public class AdminView extends VerticalLayout {
 
             return deleteBtn;
         }).setHeader("Delete");
-        equipmentGrid.asSingleSelect().addValueChangeListener(e -> {
-            if(!e.getHasValue().isEmpty()){
-                openEquipmentForm(e.getValue());
-            }
-        });
+    }
+
+    private void configPropertyGrid() {
+        propertyGrid.addColumn(Property::getCategory).setHeader("Category").setSortable(true);
+        propertyGrid.addColumn(Property::getName).setHeader("Name");
+        propertyGrid.addComponentColumn(property -> {
+            Button deleteBtn = new Button(new Icon(VaadinIcon.CLOSE), e -> {
+                if(property.getExerciseSet() != null || !property.getExerciseSet().isEmpty()) {
+                    property.getExerciseSet().forEach(exercise -> {
+                        exercise.removeProperty(property);
+                        exerciseService.save(exercise);
+                    });
+                }
+                propertyService.deleteById(property.getId());
+                updateGrid();
+            });
+            deleteBtn.addThemeVariants(
+                    ButtonVariant.LUMO_ERROR,
+                    ButtonVariant.LUMO_PRIMARY,
+                    ButtonVariant.LUMO_SMALL
+            );
+            return deleteBtn;
+        }).setHeader("Delete");
     }
 
     private void configExerciseGrid() {
@@ -108,59 +180,20 @@ public class AdminView extends VerticalLayout {
 
             return deleteBtn;
         }).setHeader("Delete");
+
         exerciseGrid.setDetailsVisibleOnClick(true);
         exerciseGrid.setItemDetailsRenderer(setExerciseDetails());
-
-
-        /*exerciseGrid.asSingleSelect().addValueChangeListener(e -> {
-           if(!e.getHasValue().isEmpty()){
-               openExerciseForm(e.getValue());
-           }
-        });*/
     }
 
     private Renderer<Exercise> setExerciseDetails() {
-        ComponentRenderer<FormLayout, Exercise> CR = new ComponentRenderer<>(exerciseIn ->{
+        ComponentRenderer<FormLayout, Exercise> CR = new ComponentRenderer<>(exercise ->{
 
-            ExerciseForm exerciseForm = new ExerciseForm(exerciseService, this, propertyService);
-            exerciseForm.setExerciseBean(exerciseIn,"Edit");
+            ExerciseForm exerciseForm = new ExerciseForm(exerciseService, this, propertyService, equipmentService, exerciseTagService);
+            exerciseForm.setExerciseBean(exercise,"Edit exercise");
 
             return exerciseForm;
         });
         return CR;
-    }
-
-
-    public ListDataProvider<Property> propertyListDataProvider(String category){
-        return new ListDataProvider<>(propertyService.findAllByCategory(category).stream().toList());
-    }
-
-    public void openEquipmentForm(Equipment selectedEquipment){
-        Dialog dialog = new Dialog();
-        EquipmentForm equipmentForm = new EquipmentForm(equipmentService, this);
-
-        if(selectedEquipment == null){
-            Equipment equipment = new Equipment();
-            equipmentForm.setEquipmentBean(equipment, "Add new equipment");
-        } else{
-            equipmentForm.setEquipmentBean(selectedEquipment, "Edit equipment");
-        }
-        dialog.add(equipmentForm);
-        dialog.open();
-    }
-
-    public void openExerciseForm(Exercise selectedExercise){
-        Dialog dialog = new Dialog();
-        ExerciseForm exerciseForm = new ExerciseForm(exerciseService, this, propertyService);
-
-        if(selectedExercise == null){
-            Exercise exercise = new Exercise();
-            exerciseForm.setExerciseBean(exercise, "Add new exercise");
-        } else{
-            exerciseForm.setExerciseBean(selectedExercise, "Edit exercise");
-        }
-        dialog.add(exerciseForm);
-        dialog.open();
     }
 
     public String getPropertyAsString(Exercise exercise, String categoryStr) {
@@ -179,10 +212,5 @@ public class AdminView extends VerticalLayout {
             equipmentAsString.append(", ");
         });
         return equipmentAsString.toString();
-    }
-
-    public void updateGrid(){
-        equipmentGrid.setItems(equipmentService.findAll());
-        exerciseGrid.setItems(exerciseService.findAllByCustomFilter(null, null, null));
     }
 }

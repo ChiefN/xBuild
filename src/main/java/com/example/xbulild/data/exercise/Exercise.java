@@ -1,5 +1,6 @@
 package com.example.xbulild.data.exercise;
 
+import com.example.xbulild.data.AbstractEntity;
 import com.example.xbulild.data.property.Property;
 import com.example.xbulild.data.equipment.Equipment;
 import com.example.xbulild.data.exercise.tag.ExerciseTag;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,19 +20,18 @@ import java.util.Set;
 @Builder
 
 @Entity
-public class Exercise {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+public class Exercise extends AbstractEntity {
 
+    @NotBlank
     String name;
+
     String description;
     String url;
 
     //Will make an eager call because we always want to know the equipments used.
     //Ignore the set of exercises in equipment to prevent infinityloop
     //Cascadetyp persist. When exercise is saved. Its equipment is also saved
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "exercise_equipment",
             joinColumns = @JoinColumn(name = "exercise_id"),
@@ -38,7 +39,7 @@ public class Exercise {
     @JsonIgnoreProperties("exerciseSet")
     Set<Equipment> equipmentSet = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "exercise_property",
             joinColumns = @JoinColumn(name = "exercise_id"),

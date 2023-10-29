@@ -1,5 +1,6 @@
 package com.example.xbulild.data.equipment;
 
+import com.example.xbulild.data.AbstractEntity;
 import com.example.xbulild.data.exercise.Exercise;
 import lombok.*;
 
@@ -15,17 +16,13 @@ import java.util.Set;
 @Builder
 
 @Entity
-public class Equipment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+public class Equipment extends AbstractEntity {
 
     @NotBlank
     String name;
 
     String url;
 
-    @ManyToMany(mappedBy = "equipmentSet")
+    @ManyToMany(mappedBy = "equipmentSet", fetch = FetchType.EAGER)
     Set<Exercise> exerciseSet = new HashSet<>();
 }

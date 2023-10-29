@@ -88,14 +88,14 @@ public class ExerciseView extends VerticalLayout {
 
     private void updateGrid() {
         Set<Equipment> selectedItems = equipmentCheckboxGroup.getSelectedItems();
-        List<Integer> equipmentIdList = selectedItems.stream().map(Equipment::getId).toList();
+        List<String> equipmentIdList = selectedItems.stream().map(Equipment::getId).toList();
         exerciseGrid.setItems(exerciseService.findAllByCustomFilter(filterText.getValue(), equipmentIdList, null));
 
         String apiQuery = getFilterAsApiQuery(filterText.getValue(), equipmentIdList);
         customApi.setText(apiQuery);
     }
 
-    public String getFilterAsApiQuery(String filterText, List<Integer> equipmentIdList){
+    public String getFilterAsApiQuery(String filterText, List<String> equipmentIdList){
         StringBuffer filterAsQuery = new StringBuffer("");
 
         filterAsQuery.append("localhost:8080/api/exercise?");

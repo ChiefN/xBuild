@@ -16,18 +16,11 @@ public class EquipmentService {
     public List<Equipment> findAll(){
         return equipmentRepository.findAll();
     }
+    public Equipment findById(String id) { return equipmentRepository.findById(id).orElseThrow(); }
 
+    //Set data
     public void save(Equipment equipment) { equipmentRepository.save(equipment);}
 
-    public void editOne(Equipment equipment) {
-        Equipment equipmentInDB = equipmentRepository.findById(equipment.getId()).orElseThrow();
-        if(equipment.getName() != null && !equipment.getName().isEmpty() && !equipment.getName().isBlank()){
-            equipmentInDB.setName(equipment.getName());
-        }
-        equipmentRepository.save(equipmentInDB);
-    }
-
-    public void deleteById(Integer id) {
-        equipmentRepository.deleteById(id);
-    }
+    //Delete data
+    public void deleteById(String id) { equipmentRepository.deleteById(id); }
 }

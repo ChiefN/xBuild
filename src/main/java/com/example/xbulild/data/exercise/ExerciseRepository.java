@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ExerciseRepository extends JpaRepository<Exercise, Integer>{
+public interface ExerciseRepository extends JpaRepository<Exercise, String>{
 
     @Query("SELECT e, et FROM Exercise e JOIN ExerciseTag et ON e.id=et.id " +
     "WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) ")
